@@ -1,27 +1,3 @@
-variable "host" {
-  type        = string
-  default     = null
-  description = "Kubernetes Host"
-}
-
-variable "cluster_ca_certificate" {
-  type        = string
-  default     = null
-  description = "Kubernetes CA certificate"
-}
-
-variable "client_certificate" {
-  type        = string
-  default     = null
-  description = "Kubernetes Client certificate"
-}
-
-variable "client_key" {
-  type        = string
-  default     = null
-  description = "Kubernetes Client key"
-}
-
 variable "cloudflare_zone_name" {
   type        = string
   description = "Cloudflare Zone name"
@@ -37,12 +13,6 @@ variable "cloudflare-records" {
   }))
   default     = []
   description = "A list of DNS record objects"
-}
-
-variable "cloudflare_api_token" {
-  type        = string
-  sensitive   = true
-  description = "Cloudflare API Token"
 }
 
 variable "internal_load_balancer" {

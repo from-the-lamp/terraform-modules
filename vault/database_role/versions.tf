@@ -2,12 +2,7 @@ terraform {
   required_providers {
     vault = {
       source = "hashicorp/vault"
-      version = "3.22.0"
+      version = "4.3.0"
     }
   }
-}
-
-provider "vault" {
-  address = var.host
-  token   = var.token
 }

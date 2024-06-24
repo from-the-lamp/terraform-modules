@@ -25,5 +25,6 @@ variable "map_users" {
 }
 
 variable "aws_auth_configmap_yaml" {
-  type = string
+  type        = string
+  description = "The YAML content for the aws-auth configmap."
 }

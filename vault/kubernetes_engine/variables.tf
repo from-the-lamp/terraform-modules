@@ -1,13 +1,5 @@
-variable "host" {
-  type = string
-}
-
-variable "token" {
-  type      = string
-  sensitive = true
-}
-
 variable "path" {
-  type    = string
-  default = "kubernetes"
+  type        = string
+  default     = "kubernetes"
+  description = "Path in Vault"
 }

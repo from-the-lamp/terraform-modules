@@ -1,12 +1,3 @@
-variable "host" {
-  type = string
-}
-
-variable "token" {
-  type      = string
-  sensitive = true
-}
-
 variable "backend_path" {
   type    = string
   default = "postgres"
