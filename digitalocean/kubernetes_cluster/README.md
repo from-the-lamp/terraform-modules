@@ -26,10 +26,10 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the Kubernetes cluster. | `string` | n/a | yes |
 | <a name="input_cluster_region"></a> [cluster\_region](#input\_cluster\_region) | The region where the Kubernetes cluster will be deployed. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The version of the Kubernetes cluster, defaulting to '1.27.4-do.0'. | `string` | `"1.27.4-do.0"` | no |
-| <a name="input_node_pool_count"></a> [node\_pool\_count](#input\_node\_pool\_count) | The number of nodes in the pool, defaulting to 1. | `number` | `1` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The version of the Kubernetes cluster. | `string` | `"1.27.4-do.0"` | no |
+| <a name="input_node_pool_count"></a> [node\_pool\_count](#input\_node\_pool\_count) | The number of nodes in the pool. | `number` | `1` | no |
 | <a name="input_node_pool_name"></a> [node\_pool\_name](#input\_node\_pool\_name) | The name of the node pool within the Kubernetes cluster. | `string` | n/a | yes |
-| <a name="input_node_pool_size"></a> [node\_pool\_size](#input\_node\_pool\_size) | The size of the nodes in the pool, defaulting to 's-1vcpu-512mb-10gb'. | `string` | `"s-1vcpu-512mb-10gb"` | no |
+| <a name="input_node_pool_size"></a> [node\_pool\_size](#input\_node\_pool\_size) | The size of the nodes in the pool. | `string` | `"s-1vcpu-512mb-10gb"` | no |
 | <a name="input_node_pool_taint"></a> [node\_pool\_taint](#input\_node\_pool\_taint) | A list of taints to apply to the nodes in the pool, each containing a key, value, and effect. | <pre>list(object({<br>    key    = string<br>    value  = string<br>    effect = string<br>  }))</pre> | `[]` | no |
 
 ## Outputs

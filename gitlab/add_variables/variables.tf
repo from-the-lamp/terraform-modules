@@ -6,7 +6,7 @@ variable "gitlab_group_full_path" {
 variable "environment_scope" {
   type        = string
   default     = "*"
-  description = "The scope of the environment for which the variables are applied, defaulting to all environments."
+  description = "The scope of the environment for which the variables are applied."
 }
 
 variable "vars" {

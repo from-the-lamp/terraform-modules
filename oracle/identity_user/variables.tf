@@ -1,15 +1,19 @@
 variable "config_file_profile" {
-  type = string
+  type        = string
+  description = "The profile name in the configuration file."
 }
 
 variable "compartment_ocid" {
-  type = string
+  type        = string
+  description = "The OCID of the compartment where the resource will be created."
 }
 
 variable "username" {
-  type = string
+  type        = string
+  description = "The username associated with the resource."
 }
 
 variable "description" {
-  type = string
+  type        = string
+  description = "A description of the resource."
 }

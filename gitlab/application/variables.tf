@@ -11,7 +11,7 @@ variable "redirect_url" {
 variable "scopes" {
   type        = list(string)
   default     = ["openid"]
-  description = "A list of scopes that the application will request, defaulting to 'openid'."
+  description = "A list of scopes that the application will request."
 }
 
 variable "confidential" {

@@ -27,7 +27,7 @@ No modules.
 | <a name="input_app_name"></a> [app\_name](#input\_app\_name) | The name of the application. | `string` | n/a | yes |
 | <a name="input_confidential"></a> [confidential](#input\_confidential) | A flag indicating whether the application is confidential. | `bool` | `true` | no |
 | <a name="input_redirect_url"></a> [redirect\_url](#input\_redirect\_url) | The URL to which the user will be redirected after authentication. | `string` | n/a | yes |
-| <a name="input_scopes"></a> [scopes](#input\_scopes) | A list of scopes that the application will request, defaulting to 'openid'. | `list(string)` | <pre>[<br>  "openid"<br>]</pre> | no |
+| <a name="input_scopes"></a> [scopes](#input\_scopes) | A list of scopes that the application will request. | `list(string)` | <pre>[<br>  "openid"<br>]</pre> | no |
 
 ## Outputs
 
