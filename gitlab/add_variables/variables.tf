@@ -1,15 +1,12 @@
-variable "gitlab_token" {
-  type        = string
-  sensitive   = true
-}
-
 variable "gitlab_group_full_path" {
   type        = string
+  description = "The full path of the GitLab group."
 }
 
 variable "environment_scope" {
-  type    = string
-  default = "*"
+  type        = string
+  default     = "*"
+  description = "The scope of the environment for which the variables are applied, defaulting to all environments."
 }
 
 variable "vars" {
@@ -18,5 +15,6 @@ variable "vars" {
     protected = bool
     masked    = bool
   }))
-  default = {}
+  default     = {}
+  description = "A map of variables to be set in GitLab CI/CD, each containing a value, and flags for whether the variable is protected and/or masked."
 }

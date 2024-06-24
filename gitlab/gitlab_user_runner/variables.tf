@@ -1,8 +1,3 @@
-variable "gitlab_token" {
-  type      = string
-  sensitive = true
-}
-
 variable "description" {
   type    = string
   default = ""
