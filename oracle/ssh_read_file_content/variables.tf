@@ -1,8 +1,3 @@
-variable "config_file_profile" {
-  type        = string
-  description = "The profile name in the configuration file."
-}
-
 variable "instance_id" {
   type        = string
   description = "The ID of the instance from which files will be fetched."

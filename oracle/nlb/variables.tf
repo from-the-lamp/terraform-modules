@@ -1,8 +1,3 @@
-variable "config_file_profile" {
-  type        = string
-  description = "The profile name in the configuration file."
-}
-
 variable "compartment_ocid" {
   type        = string
   description = "The OCID of the compartment where the resource will be created."
