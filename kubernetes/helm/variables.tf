@@ -82,7 +82,7 @@ variable "helm_namespace" {
 
 variable "helm_create_namespace" {
   type        = bool
-  default     = true
+  default     = false
   description = "A flag indicating whether to create the Kubernetes namespace if it doesn't exist."
 }
 
