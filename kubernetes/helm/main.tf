@@ -3,8 +3,8 @@ resource "helm_release" "template" {
   repository                 = var.helm_repo_url
   chart                      = var.helm_chart_name
   version                    = var.helm_chart_version
-  namespace                  = var.k8s_namespace
-  create_namespace           = var.k8s_create_namespace
+  namespace                  = var.helm_namespace
+  create_namespace           = var.helm_create_namespace
   repository_username        = var.helm_repo_user
   repository_password        = var.helm_repo_pass
   force_update               = var.helm_force_update

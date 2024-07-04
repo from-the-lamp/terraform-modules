@@ -74,13 +74,13 @@ variable "helm_values_file" {
   description = "The path to the Helm values file."
 }
 
-variable "k8s_namespace" {
+variable "helm_namespace" {
   type        = string
   default     = "infra"
   description = "The Kubernetes namespace for the Helm release."
 }
 
-variable "k8s_create_namespace" {
+variable "helm_create_namespace" {
   type        = bool
   default     = true
   description = "A flag indicating whether to create the Kubernetes namespace if it doesn't exist."
