@@ -2,7 +2,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 5.46.0 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 6.4.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
 
 ## Providers
@@ -10,7 +10,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 5.46.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.4.0 |
 | <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
 
 ## Modules
@@ -23,7 +23,7 @@ No modules.
 |------|------|
 | [null_resource.boot_finished](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [ssh_resource.template](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
-| [oci_core_instance.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/data-sources/core_instance) | data source |
+| [oci_core_instance.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/data-sources/core_instance) | data source |
 
 ## Inputs
 

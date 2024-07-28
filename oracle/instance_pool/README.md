@@ -2,13 +2,13 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 5.46.0 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 6.4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 5.46.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.4.0 |
 
 ## Modules
 
@@ -18,9 +18,9 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_core_instance_pool.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/resources/core_instance_pool) | resource |
-| [oci_core_instance_pool_instances.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/data-sources/core_instance_pool_instances) | data source |
-| [oci_identity_availability_domain.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/data-sources/identity_availability_domain) | data source |
+| [oci_core_instance_pool.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/resources/core_instance_pool) | resource |
+| [oci_core_instance_pool_instances.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/data-sources/core_instance_pool_instances) | data source |
+| [oci_identity_availability_domain.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/data-sources/identity_availability_domain) | data source |
 
 ## Inputs
 

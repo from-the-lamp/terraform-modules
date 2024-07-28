@@ -2,13 +2,13 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 5.46.0 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 6.4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 5.46.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.4.0 |
 
 ## Modules
 
@@ -18,8 +18,8 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_core_network_security_group.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/resources/core_network_security_group) | resource |
-| [oci_core_network_security_group_security_rule.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/resources/core_network_security_group_security_rule) | resource |
+| [oci_core_network_security_group.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/resources/core_network_security_group) | resource |
+| [oci_core_network_security_group_security_rule.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/resources/core_network_security_group_security_rule) | resource |
 
 ## Inputs
 

@@ -2,13 +2,13 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 5.46.0 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 6.4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 5.46.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.4.0 |
 
 ## Modules
 
@@ -18,7 +18,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_network_load_balancer_backend.template](https://registry.terraform.io/providers/oracle/oci/5.46.0/docs/resources/network_load_balancer_backend) | resource |
+| [oci_network_load_balancer_backend.template](https://registry.terraform.io/providers/oracle/oci/6.4.0/docs/resources/network_load_balancer_backend) | resource |
 
 ## Inputs
 
