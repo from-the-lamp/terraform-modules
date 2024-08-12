@@ -12,3 +12,13 @@ variable "vault_type" {
   type    = string
   default = "DEFAULT"
 }
+
+variable "key_algorithm" {
+  type    = string
+  default = "AES"
+}
+
+variable "key_length" {
+  type    = number
+  default = 16
+}

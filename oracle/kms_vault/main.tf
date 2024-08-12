@@ -10,6 +10,6 @@ resource "oci_kms_key" "template" {
   management_endpoint = oci_kms_vault.template.management_endpoint
   key_shape {
     algorithm = "AES"
-    length    = 256
+    length    = 16
   }
 }
