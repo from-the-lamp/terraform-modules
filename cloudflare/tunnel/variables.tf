@@ -97,6 +97,7 @@ variable "identity_provider_zitadel" {
     client_secret : string
     scopes : list(string)
   })
+  default = {}
 }
 
 variable "enable_identity_provider_gitlab" {
@@ -116,4 +117,5 @@ variable "identity_provider_gitlab" {
     client_secret : string
     scopes : list(string)
   })
+  default = {}
 }
