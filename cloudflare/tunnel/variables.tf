@@ -28,16 +28,6 @@ variable "ingress_rules" {
   default     = []
 }
 
-variable "virtual_networks" {
-  description = "Map of virtual network configurations"
-  type = map(object({
-    account_id           = string
-    virtual_network_name = string
-    comment              = string
-  }))
-  default = {}
-}
-
 variable "tunnel_routes" {
   description = "List of tunnel route configurations"
   type = list(object({
@@ -69,31 +59,61 @@ variable "split_tunnels" {
   default = []
 }
 
-variable "access_identity_client_id" {
-  type        = string
-  description = "Identity client ID"
-}
-
-variable "access_identity_client_secret" {
-  type        = string
-  description = "Identity client Secret"
-}
-
-variable "access_identity_tenant_id" {
-  type        = string
-  description = "AzureAD tenant ID"
-}
-
-variable "private_dns_servers" {
-  type        = list(string)
-  default     = ["168.63.129.16"]
-  description = "List of private DNS servers"
-}
-
 variable "private_domains" {
   description = "List of private domains"
   type = list(object({
     suffix      = string
     description = string
+    dns_servers = list(string)
   }))
+  default = []
+}
+
+variable "store_secrets_in_key_vault" {
+  type        = bool
+  default     = false
+  description = "Put secrets to key vault"
+}
+
+variable "key_vault_id" {
+  type        = string
+  description = "App secrets key-vault ID"
+  default     = null
+}
+
+variable "enable_identity_provider_zitadel" {
+  description = "Enable or disable the creation of the identity provider resource"
+  type        = bool
+  default     = false
+}
+
+variable "identity_provider_zitadel" {
+  type = object({
+    name : string
+    auth_url : string
+    token_url : string
+    certs_url : string
+    client_id : string
+    client_secret : string
+    scopes : list(string)
+  })
+}
+
+variable "enable_identity_provider_gitlab" {
+  description = "Enable or disable the creation of the identity provider resource"
+  type        = bool
+  default     = false
+}
+
+variable "identity_provider_gitlab" {
+  type = object({
+    name : string
+    type : string
+    auth_url : string
+    token_url : string
+    certs_url : string
+    client_id : string
+    client_secret : string
+    scopes : list(string)
+  })
 }
