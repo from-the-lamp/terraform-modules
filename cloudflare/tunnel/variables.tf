@@ -97,7 +97,16 @@ variable "identity_provider_zitadel" {
     client_secret : string
     scopes : list(string)
   })
-  default = {}
+  default = {
+    name          = ""
+    type          = ""
+    auth_url      = ""
+    token_url     = ""
+    certs_url     = ""
+    client_id     = ""
+    client_secret = ""
+    scopes        = []
+  }
 }
 
 variable "enable_identity_provider_gitlab" {
@@ -108,14 +117,23 @@ variable "enable_identity_provider_gitlab" {
 
 variable "identity_provider_gitlab" {
   type = object({
-    name : string
-    type : string
-    auth_url : string
-    token_url : string
-    certs_url : string
-    client_id : string
+    name          : string
+    type          : string
+    auth_url      : string
+    token_url     : string
+    certs_url     : string
+    client_id     : string
     client_secret : string
-    scopes : list(string)
+    scopes        : list(string)
   })
-  default = {}
+  default = {
+    name          = ""
+    type          = ""
+    auth_url      = ""
+    token_url     = ""
+    certs_url     = ""
+    client_id     = ""
+    client_secret = ""
+    scopes        = []
+  }
 }
