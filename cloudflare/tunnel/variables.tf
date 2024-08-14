@@ -99,7 +99,6 @@ variable "identity_provider_zitadel" {
   })
   default = {
     name          = ""
-    type          = ""
     auth_url      = ""
     token_url     = ""
     certs_url     = ""
@@ -118,7 +117,6 @@ variable "enable_identity_provider_gitlab" {
 variable "identity_provider_gitlab" {
   type = object({
     name          : string
-    type          : string
     auth_url      : string
     token_url     : string
     certs_url     : string
@@ -128,7 +126,6 @@ variable "identity_provider_gitlab" {
   })
   default = {
     name          = ""
-    type          = ""
     auth_url      = ""
     token_url     = ""
     certs_url     = ""
