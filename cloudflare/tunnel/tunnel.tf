@@ -1,3 +1,24 @@
+resource "cloudflare_tunnel_config" "template" {
+  count = var.create_tunnel_config ? 1 : 0
+
+  account_id = var.account_id
+  tunnel_id  = cloudflare_tunnel.template.id
+
+  config {
+    warp_routing {
+      enabled = var.warp_routing
+    }
+    dynamic "ingress_rule" {
+      for_each = var.ingress_rules
+      content {
+        hostname = lookup(ingress_rule.value, "hostname", null)
+        path     = lookup(ingress_rule.value, "path", null)
+        service  = lookup(ingress_rule.value, "service", null)
+      }
+    }
+  }
+}
+
 resource "random_password" "template" {
   count  = var.tunnel_secret != null ? 0 : 1
   length = 64
@@ -18,20 +39,6 @@ resource "cloudflare_split_tunnel" "template" {
       address     = try(tunnels.value.address, null)
       host        = try(tunnels.value.host, null)
       description = tunnels.value.description
-    }
-  }
-  depends_on = [cloudflare_tunnel_route.template]
-}
-
-resource "cloudflare_fallback_domain" "template" {
-  count      = length(var.private_domains) > 0 ? 1 : 0
-  account_id = var.account_id
-  dynamic "domains" {
-    for_each = var.private_domains
-    content {
-      suffix      = domains.value.suffix
-      description = domains.value.description
-      dns_server  = domains.value.dns_servers
     }
   }
 }
