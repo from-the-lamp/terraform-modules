@@ -11,7 +11,7 @@ resource "helm_release" "template" {
   recreate_pods              = var.helm_recreate_pods
   reuse_values               = var.helm_reuse_values
   disable_openapi_validation = var.disable_openapi_validation
-  values                     = [var.helm_values_file]
+  values                     = var.helm_values
   dynamic "set_sensitive" {
     for_each = var.helm_set_sensitive
     content {

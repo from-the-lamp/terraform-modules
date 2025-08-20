@@ -53,7 +53,7 @@ variable "is_host_external" {
   description = "A flag indicating whether the host is external."
 }
 
-variable "helm_values_file" {
+variable "helm_values" {
   type        = string
   default     = ""
   description = "The path to the Helm values file."
