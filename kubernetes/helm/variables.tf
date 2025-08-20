@@ -54,9 +54,8 @@ variable "is_host_external" {
 }
 
 variable "helm_values" {
-  type        = string
-  default     = ""
-  description = "The path to the Helm values file."
+  type    = list
+  default = []
 }
 
 variable "helm_namespace" {
