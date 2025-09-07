@@ -13,7 +13,7 @@ resource "helm_release" "template" {
   disable_openapi_validation = var.disable_openapi_validation
   values                     = var.helm_values
   set_sensitive = [
-    for k, v in var.set_sensitive : {
+    for k, v in var.helm_set_sensitive : {
       name  = k
       value = v
     }
