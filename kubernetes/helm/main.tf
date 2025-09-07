@@ -12,11 +12,10 @@ resource "helm_release" "template" {
   reuse_values               = var.helm_reuse_values
   disable_openapi_validation = var.disable_openapi_validation
   values                     = var.helm_values
-  dynamic "set_sensitive" {
-    for_each = var.helm_set_sensitive
-    content {
-      name  = set_sensitive.key
-      value = set_sensitive.value
+  set_sensitive = [
+    for k, v in var.set_sensitive : {
+      name  = k
+      value = v
     }
-  }
+  ]
 }
