@@ -38,7 +38,4 @@ resource "cloudflare_zero_trust_device_default_profile" "template" {
       description = tunnel.description
     }
   ]
-  service_mode_v2 {
-    mode = "warp"
-  }
 }
