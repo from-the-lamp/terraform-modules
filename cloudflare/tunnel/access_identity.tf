@@ -1,5 +1,5 @@
 
-resource "cloudflare_access_identity_provider" "zitadel" {
+resource "cloudflare_zero_trust_access_identity_provider" "zitadel" {
   count = var.enable_identity_provider_zitadel ? 1 : 0
 
   account_id = var.account_id
@@ -15,7 +15,7 @@ resource "cloudflare_access_identity_provider" "zitadel" {
   }
 }
 
-resource "cloudflare_access_identity_provider" "gitlab" {
+resource "cloudflare_zero_trust_access_identity_provider" "gitlab" {
   count = var.enable_identity_provider_gitlab ? 1 : 0
 
   account_id = var.account_id

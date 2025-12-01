@@ -1,4 +1,4 @@
-resource "cloudflare_fallback_domain" "template" {
+resource "cloudflare_zero_trust_device_fallback_domain" "template" {
   count      = length(var.private_domains) > 0 ? 1 : 0
   account_id = var.account_id
   dynamic "domains" {
