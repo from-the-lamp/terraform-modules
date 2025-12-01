@@ -31,6 +31,9 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "template" {
 
 resource "cloudflare_zero_trust_device_default_profile" "template" {
   account_id = var.account_id
+  service_mode_v2 {
+    mode = "warp"
+  }
   include = [
     for tunnel in var.split_tunnels : {
       address     = try(tunnel.address, null)
