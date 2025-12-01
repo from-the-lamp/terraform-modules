@@ -5,7 +5,7 @@ resource "cloudflare_zero_trust_access_identity_provider" "zitadel" {
   account_id = var.account_id
   name       = var.identity_provider_zitadel.name
   type       = "oidc"
-  config {
+  config = {
     auth_url      = var.identity_provider_zitadel.auth_url
     token_url     = var.identity_provider_zitadel.token_url
     certs_url     = var.identity_provider_zitadel.certs_url
@@ -21,7 +21,7 @@ resource "cloudflare_zero_trust_access_identity_provider" "gitlab" {
   account_id = var.account_id
   name       = var.identity_provider_gitlab.name
   type       = "oidc"
-  config {
+  config = {
     auth_url      = var.identity_provider_gitlab.auth_url
     token_url     = var.identity_provider_gitlab.token_url
     certs_url     = var.identity_provider_gitlab.certs_url
