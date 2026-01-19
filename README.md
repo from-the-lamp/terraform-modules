@@ -71,4 +71,3 @@ We welcome Pull Requests! Before submitting changes, please ensure:
 <p align="center">
   Made with ❤️ by the <b>From the Lamp</b> team
 </p>
-odules
