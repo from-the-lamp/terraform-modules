@@ -6,7 +6,7 @@ variable "helm_release_name" {
 
 variable "helm_repo_url" {
   type        = string
-  default     = "https://repo.url"
+  default     = ""
   description = "The URL of the Helm chart repository."
 }
 
@@ -54,7 +54,7 @@ variable "is_host_external" {
 }
 
 variable "helm_values" {
-  type    = list
+  type    = list(any)
   default = []
 }
 
