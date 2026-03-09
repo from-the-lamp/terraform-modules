@@ -3,14 +3,14 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
-| <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | 4.39.0 |
+| <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | 5.13.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | 4.39.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
+| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | 5.13.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -20,14 +20,15 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [cloudflare_access_identity_provider.gitlab](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/access_identity_provider) | resource |
-| [cloudflare_access_identity_provider.zitadel](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/access_identity_provider) | resource |
-| [cloudflare_fallback_domain.template](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/fallback_domain) | resource |
-| [cloudflare_split_tunnel.template](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/split_tunnel) | resource |
-| [cloudflare_tunnel.template](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/tunnel) | resource |
-| [cloudflare_tunnel_config.template](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/tunnel_config) | resource |
-| [cloudflare_tunnel_route.template](https://registry.terraform.io/providers/cloudflare/cloudflare/4.39.0/docs/resources/tunnel_route) | resource |
+| [cloudflare_zero_trust_access_identity_provider.gitlab](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_access_identity_provider) | resource |
+| [cloudflare_zero_trust_access_identity_provider.zitadel](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_access_identity_provider) | resource |
+| [cloudflare_zero_trust_device_default_profile.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_device_default_profile) | resource |
+| [cloudflare_zero_trust_device_default_profile_local_domain_fallback.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_device_default_profile_local_domain_fallback) | resource |
+| [cloudflare_zero_trust_tunnel_cloudflared.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_tunnel_cloudflared) | resource |
+| [cloudflare_zero_trust_tunnel_cloudflared_config.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_tunnel_cloudflared_config) | resource |
+| [cloudflare_zero_trust_tunnel_cloudflared_route.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/resources/zero_trust_tunnel_cloudflared_route) | resource |
 | [random_password.template](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [cloudflare_zero_trust_tunnel_cloudflared_token.template](https://registry.terraform.io/providers/cloudflare/cloudflare/5.13.0/docs/data-sources/zero_trust_tunnel_cloudflared_token) | data source |
 
 ## Inputs
 
@@ -37,8 +38,8 @@ No modules.
 | <a name="input_create_tunnel_config"></a> [create\_tunnel\_config](#input\_create\_tunnel\_config) | Flag to control the creation of the tunnel config | `bool` | `false` | no |
 | <a name="input_enable_identity_provider_gitlab"></a> [enable\_identity\_provider\_gitlab](#input\_enable\_identity\_provider\_gitlab) | Enable or disable the creation of the identity provider resource | `bool` | `false` | no |
 | <a name="input_enable_identity_provider_zitadel"></a> [enable\_identity\_provider\_zitadel](#input\_enable\_identity\_provider\_zitadel) | Enable or disable the creation of the identity provider resource | `bool` | `false` | no |
-| <a name="input_identity_provider_gitlab"></a> [identity\_provider\_gitlab](#input\_identity\_provider\_gitlab) | n/a | <pre>object({<br>    name : string<br>    type : string<br>    auth_url : string<br>    token_url : string<br>    certs_url : string<br>    client_id : string<br>    client_secret : string<br>    scopes : list(string)<br>  })</pre> | n/a | yes |
-| <a name="input_identity_provider_zitadel"></a> [identity\_provider\_zitadel](#input\_identity\_provider\_zitadel) | n/a | <pre>object({<br>    name : string<br>    auth_url : string<br>    token_url : string<br>    certs_url : string<br>    client_id : string<br>    client_secret : string<br>    scopes : list(string)<br>  })</pre> | n/a | yes |
+| <a name="input_identity_provider_gitlab"></a> [identity\_provider\_gitlab](#input\_identity\_provider\_gitlab) | OIDC configuration for GitLab identity provider | <pre>object({<br>    name          = string<br>    auth_url      = string<br>    token_url     = string<br>    certs_url     = string<br>    client_id     = string<br>    client_secret = string<br>    scopes        = list(string)<br>  })</pre> | See variables.tf | no |
+| <a name="input_identity_provider_zitadel"></a> [identity\_provider\_zitadel](#input\_identity\_provider\_zitadel) | OIDC configuration for Zitadel identity provider | <pre>object({<br>    name          = string<br>    auth_url      = string<br>    token_url     = string<br>    certs_url     = string<br>    client_id     = string<br>    client_secret = string<br>    scopes        = list(string)<br>  })</pre> | See variables.tf | no |
 | <a name="input_ingress_rules"></a> [ingress\_rules](#input\_ingress\_rules) | List of ingress rules | `list(map(any))` | `[]` | no |
 | <a name="input_key_vault_id"></a> [key\_vault\_id](#input\_key\_vault\_id) | App secrets key-vault ID | `string` | `null` | no |
 | <a name="input_private_domains"></a> [private\_domains](#input\_private\_domains) | List of private domains | <pre>list(object({<br>    suffix      = string<br>    description = string<br>    dns_servers = list(string)<br>  }))</pre> | `[]` | no |
