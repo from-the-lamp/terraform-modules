@@ -1,12 +1,12 @@
 variable "account_id" {
   type        = string
-  description = "The Cloudflare account ID or user zone ID"
+  description = "The Cloudflare account ID"
   default     = null
 }
 
 variable "zone_id" {
   type        = string
-  description = "The Cloudflare zone ID or user account ID"
+  description = "The Cloudflare zone ID"
   default     = null
 }
 
