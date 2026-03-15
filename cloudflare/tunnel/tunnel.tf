@@ -42,3 +42,8 @@ resource "cloudflare_zero_trust_device_default_profile" "template" {
     }
   ]
 }
+
+data "cloudflare_zero_trust_tunnel_cloudflared_token" "template" {
+  account_id = var.account_id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.template.id
+}
