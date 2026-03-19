@@ -1,12 +1,12 @@
 variable "account_id" {
   type        = string
-  description = "The Cloudflare account ID or user zone ID"
+  description = "The Cloudflare account ID"
   default     = null
 }
 
 variable "zone_id" {
   type        = string
-  description = "The Cloudflare zone ID or user account ID"
+  description = "The Cloudflare zone ID"
   default     = null
 }
 
@@ -89,13 +89,13 @@ variable "enable_identity_provider_zitadel" {
 
 variable "identity_provider_zitadel" {
   type = object({
-    name : string
-    auth_url : string
-    token_url : string
-    certs_url : string
-    client_id : string
-    client_secret : string
-    scopes : list(string)
+    name          = string
+    auth_url      = string
+    token_url     = string
+    certs_url     = string
+    client_id     = string
+    client_secret = string
+    scopes        = list(string)
   })
   default = {
     name          = ""
@@ -116,13 +116,13 @@ variable "enable_identity_provider_gitlab" {
 
 variable "identity_provider_gitlab" {
   type = object({
-    name          : string
-    auth_url      : string
-    token_url     : string
-    certs_url     : string
-    client_id     : string
-    client_secret : string
-    scopes        : list(string)
+    name          = string
+    auth_url      = string
+    token_url     = string
+    certs_url     = string
+    client_id     = string
+    client_secret = string
+    scopes        = list(string)
   })
   default = {
     name          = ""

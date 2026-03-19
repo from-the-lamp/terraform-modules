@@ -6,7 +6,7 @@ variable "helm_release_name" {
 
 variable "helm_repo_url" {
   type        = string
-  default     = "https://repo.url"
+  default     = ""
   description = "The URL of the Helm chart repository."
 }
 
@@ -54,8 +54,9 @@ variable "is_host_external" {
 }
 
 variable "helm_values" {
-  type    = list
-  default = []
+  type        = list(any)
+  default     = []
+  description = "A list of Helm values files content to apply to the release."
 }
 
 variable "helm_namespace" {
@@ -114,6 +115,7 @@ variable "oci_registry_username" {
 
 variable "oci_registry_password" {
   type        = string
+  sensitive   = true
   default     = ""
   description = "The password for the OCI registry."
 }

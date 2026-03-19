@@ -1,10 +1,17 @@
-# # 🏗️ From the Lamp: Terraform Modules
+# 🏗️ From the Lamp: Terraform Modules
 
 [![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 [![GitLab CI](https://img.shields.io/badge/gitlab%20ci-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/from-the-lamp/infra/terraform/modules/-/pipelines)
 
 A collection of reusable Terraform modules for managing infrastructure across various cloud providers and services. These modules are designed with a focus on security, scalability, and adherence to industry best practices.
+
+## Design principles
+
+- **Reusability:** modules are composable building blocks
+- **Standardization:** consistent interfaces (inputs/outputs) and documentation
+- **Security:** avoid embedding secrets; prefer least-privilege patterns
+- **Automation-first:** intended to be driven by IaC workflows (Terragrunt/CI)
 
 ---
 
