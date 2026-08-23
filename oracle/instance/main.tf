@@ -48,6 +48,7 @@ resource "oci_core_instance" "template" {
     hostname_label            = var.display_name
     assign_private_dns_record = true
     assign_public_ip          = true
+    nsg_ids                   = var.nsg_ids
   }
   freeform_tags = var.freeform_tags
 }

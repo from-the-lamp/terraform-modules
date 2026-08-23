@@ -53,3 +53,9 @@ variable "ad_number" {
   type        = string
   description = "The availability domain number where the resource will be created."
 }
+
+variable "nsg_ids" {
+  type        = list(string)
+  default     = []
+  description = "The IDs of the network security groups to attach to the instance's primary VNIC."
+}
