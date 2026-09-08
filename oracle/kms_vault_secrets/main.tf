@@ -1,5 +1,5 @@
 resource "oci_vault_secret" "template" {
-  for_each = var.secrets
+  for_each = nonsensitive(toset(keys(var.secrets)))
 
   compartment_id = var.compartment_ocid
   vault_id       = var.vault_id
@@ -7,6 +7,6 @@ resource "oci_vault_secret" "template" {
   secret_name    = each.key
   secret_content {
     content_type = "BASE64"
-    content      = base64encode(each.value)
+    content      = base64encode(var.secrets[each.key])
   }
 }
