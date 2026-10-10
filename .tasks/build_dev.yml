@@ -1,0 +1,51 @@
+version: '3'
+
+silent: true
+tasks:
+  dev:build:push:*:
+    desc: "[DEV] Build and Push specific Module"
+    cmds:
+      - task: build:push:{{index .MATCH 0}}
+        vars:
+          OCI_REPO: "{{.OCI_REPO_DEV}}"
+          MODE: "dev"
+
+  dev:build:push:all:
+    desc: "[DEV] Build and Push all Modules"
+    cmds:
+      - echo "Building..."
+      - task: build:all
+      - echo "Pushing..."
+      - task: dev:push:all
+
+  dev:build:push:changed:
+    desc: "[DEV] Build and Push changed Modules"
+    cmds:
+      - echo "Building..."
+      - task: build:changed
+      - echo "Pushing..."
+      - task: dev:push:changed
+
+  dev:push:*:
+    desc: "[DEV] Push specific Module with dev repo"
+    cmds:
+      - task: push:{{index .MATCH 0}}
+        vars:
+          OCI_REPO: "{{.OCI_REPO_DEV}}"
+          MODE: "dev"
+
+  dev:push:all:
+    desc: "[DEV] Push all Modules with dev repo"
+    cmds:
+      - task: push:all
+        vars:
+          OCI_REPO: "{{.OCI_REPO_DEV}}"
+          MODE: "dev"
+
+  dev:push:changed:
+    desc: "[DEV] Push changed Modules with dev repo"
+    cmds:
+      - task: push:changed
+        vars:
+          OCI_REPO: "{{.OCI_REPO_DEV}}"
+          MODE: "dev"

@@ -50,6 +50,20 @@ Modules for automating secrets management:
 
 ---
 
+## 🧰 Development
+
+Tool versions (`opentofu`, `oras`, `tfsec`, `terraform-docs`, `task`) are
+pinned in `mise.toml`, used both locally and by the `Build:Tools` CI job -
+install [mise](https://mise.jdx.dev), then:
+
+```
+mise install
+task
+```
+
+Each module directory needs a `VERSION` file to be built/published - see
+`task --list-all` for the `build:*`/`push:*` tasks.
+
 ## 🚀 Quick Start
 
 Example of using the Cloudflare Tunnel module:

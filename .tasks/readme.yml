@@ -1,0 +1,25 @@
+version: '3'
+
+silent: true
+tasks:
+  .readme:
+    internal: true
+    dir: '{{.DIR}}'
+    cmds:
+      - terraform-docs markdown table --output-file README.md --output-mode inject .
+
+  readme:all:
+    desc: Generate README.md for all Modules
+    deps:
+      - for: { var: MODULE_DIRS }
+        task: .readme
+        vars:
+          DIR: '{{.ITEM}}'
+
+  readme:changed:
+    desc: Generate README.md for changed Modules
+    deps:
+      - for: { var: CHANGED_MODULE_DIRS }
+        task: .readme
+        vars:
+          DIR: '{{.ITEM}}'

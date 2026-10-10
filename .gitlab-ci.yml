@@ -1,0 +1,44 @@
+stages:
+  - Build
+
+Build:Tools:
+  stage: Build
+  image: docker:27-cli
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: "1"
+    DOCKER_CERT_PATH: "/certs/client"
+  rules:
+    - changes:
+        - Dockerfile
+        - mise.toml
+    - if: $CI_PIPELINE_SOURCE == "web"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+Build:Modules:
+  stage: Build
+  image: $CI_REGISTRY_IMAGE:latest
+  allow_failure: true
+  rules:
+    - changes:
+        - "*/**/VERSION"
+        - Taskfile.yml
+        - .tasks/**/*
+        - .gitlab-ci.yml
+    - if: $CI_PIPELINE_SOURCE == "web"
+  variables:
+    OCI_REGISTRY: $CI_REGISTRY
+    OCI_REPO: $CI_REGISTRY_IMAGE
+    OCI_REPO_USER: $CI_REGISTRY_USER
+    OCI_REPO_PASS: $CI_REGISTRY_PASSWORD
+  script:
+    - task auth
+    - task list:changed
+    - task build:push:changed
+    - task readme:changed

@@ -1,0 +1,45 @@
+version: '3'
+
+dotenv: [.env]
+vars:
+  OCI_REPO: registry.gitlab.com/from-the-lamp/infra/terraform-modules
+  OCI_REPO_DEV: registry.gitlab.com/from-the-lamp/infra/terraform-modules
+  MODULE_DIRS:
+    sh: find . -type f -name "VERSION" -exec dirname {} \; | sed 's|^\./||' | tr '\n' ' '
+  CHANGED_MODULE_DIRS:
+    sh: git diff --name-only HEAD~1 | grep 'VERSION$' | xargs -n1 dirname | sort -u | tr '\n' ' '
+
+includes:
+  build:
+    taskfile: .tasks/build.yml
+    flatten: true
+  build_dev:
+    taskfile: .tasks/build_dev.yml
+    flatten: true
+  readme:
+    taskfile: .tasks/readme.yml
+    flatten: true
+
+silent: true
+tasks:
+  default:
+    desc: List all available tasks
+    cmd: task --list-all
+
+  list:all:
+    desc: List all Module directories
+    cmd: echo {{.MODULE_DIRS}} | tr ' ' '\n'
+
+  list:changed:
+    desc: List changed Module directories
+    cmd: echo {{.CHANGED_MODULE_DIRS}} | tr ' ' '\n'
+
+  cleanup:
+    desc: Remove temporary files
+    cmds:
+      - find . -type d -name ".output" -prune -exec rm -rf {} \;
+
+  auth:
+    desc: Login into GitLab Container Registry
+    cmds:
+      - echo "${OCI_REPO_PASS}" | oras login -u "${OCI_REPO_USER}" --password-stdin "${OCI_REGISTRY}"

@@ -1,0 +1,128 @@
+version: '3'
+
+silent: true
+tasks:
+  .build:
+    internal: true
+    dir: '{{.DIR}}'
+    cmds:
+      - |
+        OUT="$(pwd)/.output"
+        rm -rf "$OUT"
+        mkdir -p "$OUT"
+        if [ ! -f upstream.tf ]; then
+          zip -qr "$OUT/module.zip" . -x ".output/*"
+          exit 0
+        fi
+        tofu get
+        SRC=".terraform/modules/upstream"
+        if [ ! -d "$SRC" ]; then
+          echo "upstream.tf must declare a module named \"upstream\"" >&2
+          exit 1
+        fi
+        if [ -z "$(ls *.tf | grep -v '^upstream\.tf$')" ]; then
+          (cd "$SRC" && zip -qr "$OUT/module.zip" .)
+        else
+          mkdir -p "$OUT/pkg"
+          find . -maxdepth 1 -mindepth 1 ! -name .output ! -name .terraform ! -name VERSION -exec cp -r {} "$OUT/pkg/" \;
+          cp -r "$SRC" "$OUT/pkg/upstream"
+          sed -E -i 's|^([[:space:]]*source[[:space:]]*=).*|\1 "./upstream"|; /^[[:space:]]*version[[:space:]]*=/d' "$OUT/pkg/upstream.tf"
+          (cd "$OUT/pkg" && zip -qr "$OUT/module.zip" .)
+        fi
+
+  build:push:*:
+    desc: Build and Push specific Module
+    cmds:
+      - echo "Building..."
+      - task: .build
+        vars: { DIR: "{{index .MATCH 0}}" }
+      - echo "Pushing..."
+      - task: .push
+        vars: { DIR: "{{index .MATCH 0}}", OCI_REPO: "{{.OCI_REPO}}", MODE: "{{.MODE}}" }
+
+  build:push:all:
+    desc: Build and Push all Modules
+    cmds:
+      - echo "Building..."
+      - task: build:all
+      - echo "Pushing..."
+      - task: push:all
+
+  build:push:changed:
+    desc: Build and Push changed Modules
+    cmds:
+      - echo "Building..."
+      - task: build:changed
+      - echo "Pushing..."
+      - task: push:changed
+
+  build:*:
+    desc: Build specific Module (ex. task build:dirname)
+    cmds:
+      - task: .build
+        vars: { DIR: "{{index .MATCH 0}}" }
+
+  build:all:
+    desc: Build all Modules
+    deps:
+      - for: { var: MODULE_DIRS }
+        task: .build
+        vars:
+          DIR: '{{.ITEM}}'
+
+  build:changed:
+    desc: Build changed Modules
+    deps:
+      - for: { var: CHANGED_MODULE_DIRS }
+        task: .build
+        vars:
+          DIR: '{{.ITEM}}'
+    preconditions:
+      - sh: '[ -n "{{.CHANGED_MODULE_DIRS}}" ]'
+        msg: "No changed module directories found."
+
+  .push:
+    internal: true
+    dir: '{{.DIR}}'
+    cmds:
+      - |
+        VERSION=$(cat VERSION)
+        if [ "{{.MODE}}" = "dev" ]; then
+          echo -e "\033[31mDEVELOPMENT MODE → {{.OCI_REPO}}\033[0m"
+          oras push --artifact-type=application/vnd.opentofu.modulepkg {{.OCI_REPO}}/{{.DIR}}:$VERSION .output/module.zip:archive/zip
+        elif oras manifest fetch {{.OCI_REPO}}/{{.DIR}}:$VERSION >/dev/null 2>&1; then
+          echo "Module {{.OCI_REPO}}/{{.DIR}}:$VERSION already exists, skipping."
+          exit 0
+        else
+          echo "Module {{.OCI_REPO}}/{{.DIR}}:$VERSION does not exist, publishing:"
+          oras push --artifact-type=application/vnd.opentofu.modulepkg {{.OCI_REPO}}/{{.DIR}}:$VERSION .output/module.zip:archive/zip
+        fi
+
+  push:*:
+    desc: Push specific Module (ex. task push:dirname)
+    cmds:
+      - task: .push
+        vars: { DIR: "{{index .MATCH 0}}", OCI_REPO: "{{.OCI_REPO}}", MODE: "{{.MODE}}" }
+
+  push:all:
+    desc: Push all Modules
+    deps:
+      - for: { var: MODULE_DIRS }
+        task: .push
+        vars:
+          DIR: '{{.ITEM}}'
+          OCI_REPO: '{{.OCI_REPO}}'
+          MODE: '{{.MODE}}'
+
+  push:changed:
+    desc: Push changed Modules
+    deps:
+      - for: { var: CHANGED_MODULE_DIRS }
+        task: .push
+        vars:
+          DIR: '{{.ITEM}}'
+          OCI_REPO: '{{.OCI_REPO}}'
+          MODE: '{{.MODE}}'
+    preconditions:
+      - sh: '[ -n "{{.CHANGED_MODULE_DIRS}}" ]'
+        msg: "No changed module directories found."
