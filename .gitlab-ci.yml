@@ -41,6 +41,11 @@ Build:Modules:
     OCI_REPO_PASS: $CI_REGISTRY_PASSWORD
   script:
     - task auth
-    - task list:changed
-    - task build:push:changed
-    - task readme:changed
+    - |
+      if git diff --name-only HEAD~1 | grep -q 'VERSION$'; then
+        task list:changed
+        task build:push:changed
+        task readme:changed
+      else
+        echo "No changed module directories - nothing to build/push"
+      fi
