@@ -24,7 +24,9 @@ Build:Tools:
 Build:Modules:
   stage: Build
   image: $CI_REGISTRY_IMAGE:latest
-  allow_failure: true
+  needs:
+    - job: Build:Tools
+      optional: true
   rules:
     - changes:
         - "*/**/VERSION"
