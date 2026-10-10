@@ -17,8 +17,8 @@ variable "auto_approvers_exit_node" {
 }
 
 variable "grants" {
-  description = "List of ACL grants (raw policy-file grant objects: src/dst/ip or src/dst/app)"
-  type        = list(any)
+  description = "List of ACL grants (raw policy-file grant objects: src/dst/ip or src/dst/app) - typed as `any`, not `list(any)`, because grant objects have differing shapes (e.g. one with `app`, others with `ip`/`via`) and Terraform's JSON-to-list conversion for TF_VAR_grants can't unify heterogeneous element types the way a native HCL tuple literal would"
+  type        = any
   default     = []
 }
 
