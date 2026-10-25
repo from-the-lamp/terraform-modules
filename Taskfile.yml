@@ -10,6 +10,9 @@ vars:
     sh: git diff --name-only HEAD~1 | grep 'VERSION$' | xargs -n1 dirname | sort -u | tr '\n' ' '
 
 includes:
+  init:
+    taskfile: .tasks/init.yml
+    flatten: true
   build:
     taskfile: .tasks/build.yml
     flatten: true
