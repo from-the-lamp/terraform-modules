@@ -11,9 +11,12 @@ another way. Note: the pinned tool is `opentofu` (binary `tofu`), not `terraform
 ## VERSION is the release trigger (same convention as docker-images)
 
 Each module directory has its own `VERSION` file. `task build:push:changed` only rebuilds/pushes a
-module whose `VERSION` file is in the last commit's diff (`git diff --name-only HEAD~1 | grep
-'VERSION$'`) - and skips the push entirely if that exact version tag already exists in the OCI
-registry. Bump `VERSION` to a new value to force a real release. If you change a module's `.tf`
+module whose `VERSION` differs from `DIFF_BASE` (in CI the MR's merge base, or the previous `main`
+commit for a push to `main`; locally `HEAD~1` against the working tree) - and skips the push entirely
+if that exact version tag already exists in the OCI registry. `task plan` prints the diff base and
+the `<OCI_REPO>/<dir>:<VERSION>` each changed module would be pushed to; `DIFF_BASE=<ref>` and
+`TARGETS="dir1 dir2"` (environment variables) override the selection, and `TARGETS` in "Run
+pipeline" on `main` publishes those modules without a commit. Bump `VERSION` to a new value to force a real release. If you change a module's `.tf`
 files without bumping `VERSION`, nothing gets published. As of this writing, no module directory in
 the repo has a `VERSION` file yet - add one yourself before this mechanism does anything for a given
 module (`task list:all`/`task build:push:changed` will otherwise just report nothing to do).
@@ -22,3 +25,17 @@ module (`task list:all`/`task build:push:changed` will otherwise just report not
 whatever is there - use it for iterating, not against a version you consider a real release.
 
 To force a specific module to build regardless of git diff: `task build:push:<dirname>`.
+
+## CI: build stage, then push stage - and only `main` pushes
+
+| Stage | Job | Runs on | Command |
+|---|---|---|---|
+| `.pre` | `tools` | `Dockerfile`/`mise.toml` changed, or a web pipeline | builds the CI tools image with inline cache; pushes `:latest` **only on `main`** |
+| `build` | `build` | MRs and `main` | `task build:changed && task readme:changed` - `<dir>/.output/module.zip`, kept as job artifacts |
+| `push` | `push` | `main` only (never from an MR) | `task auth && task push:changed` - `oras push` of the zips the build stage left |
+
+`OCI_REPO` is `registry.gitlab.com/from-the-lamp/infra/terraform/modules` - this project's own
+registry path. Task's global `vars:` outrank environment variables, so the value in `Taskfile.yml`
+is what every push uses, in CI too; an `OCI_REPO` CI variable would be silently ignored. Nothing
+consumes these OCI artifacts yet: terragrunt (`root.hcl`, `private_modules_base_url`) still pulls
+modules over `git::https`.

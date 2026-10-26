@@ -4,10 +4,28 @@ dotenv: [.env]
 vars:
   OCI_REPO: registry.gitlab.com/from-the-lamp/infra/terraform-modules
   OCI_REPO_DEV: registry.gitlab.com/from-the-lamp/infra/terraform-modules
+  DIFF_BASE:
+    sh: |
+      if [ -n "${DIFF_BASE:-}" ]; then
+        echo "$DIFF_BASE"
+        exit 0
+      fi
+      for c in "${CI_MERGE_REQUEST_DIFF_BASE_SHA:-}" "${CI_COMMIT_BEFORE_SHA:-}"; do
+        if [ -n "$c" ] && [ "$c" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$c^{commit}" 2>/dev/null; then
+          echo "$c"
+          exit 0
+        fi
+      done
+      echo HEAD~1
   MODULE_DIRS:
     sh: find . -type f -name "VERSION" -exec dirname {} \; | sed 's|^\./||' | tr '\n' ' '
   CHANGED_MODULE_DIRS:
-    sh: git diff --name-only HEAD~1 | grep 'VERSION$' | xargs -n1 dirname | sort -u | tr '\n' ' '
+    sh: |
+      if [ -n "${TARGETS:-}" ]; then
+        echo "$TARGETS"
+        exit 0
+      fi
+      git diff --name-only --diff-filter=d {{.DIFF_BASE}} | grep 'VERSION$' | xargs -r -n1 dirname | sort -u | tr '\n' ' '
 
 includes:
   init:
@@ -32,6 +50,19 @@ tasks:
   list:all:
     desc: List all Module directories
     cmd: echo {{.MODULE_DIRS}} | tr ' ' '\n'
+
+  plan:
+    desc: Show what CI would build and push from the current diff - diff base, changed modules, target OCI refs
+    cmds:
+      - echo -e "\033[36m==>\033[0m diff base {{.DIFF_BASE}} (override with DIFF_BASE=<ref>, or name modules with TARGETS=\"dir1 dir2\" - both as environment variables)"
+      - |
+        if [ -z "{{.CHANGED_MODULE_DIRS}}" ]; then
+          echo -e "\033[36m==>\033[0m no VERSION changed - CI would build and push nothing"
+          exit 0
+        fi
+        for d in {{.CHANGED_MODULE_DIRS}}; do
+          echo "$d -> {{.OCI_REPO}}/$d:$(cat "$d/VERSION")"
+        done
 
   list:changed:
     desc: List changed Module directories

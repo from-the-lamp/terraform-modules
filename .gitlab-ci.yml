@@ -1,51 +1,76 @@
-stages:
-  - Build
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      auto_cancel:
+        on_new_commit: none
+    - if: $CI_PIPELINE_SOURCE =~ /^(web|api|schedule)$/
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: $CI_COMMIT_BRANCH
 
-Build:Tools:
-  stage: Build
+stages:
+  - build
+  - push
+
+variables:
+  OCI_REGISTRY: $CI_REGISTRY
+  OCI_REPO_USER: $CI_REGISTRY_USER
+  OCI_REPO_PASS: $CI_REGISTRY_PASSWORD
+
+.module-paths: &module-paths
+  - "*/**/VERSION"
+  - Taskfile.yml
+  - .tasks/**/*
+  - .gitlab-ci.yml
+  - Dockerfile
+  - mise.toml
+
+tools:
+  stage: .pre
   image: docker:27-cli
   services:
-    - docker:27-dind
+    - name: docker:27-dind
+      command: ["--mtu=1450"]
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: "1"
     DOCKER_CERT_PATH: "/certs/client"
   rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
     - changes:
         - Dockerfile
         - mise.toml
-    - if: $CI_PIPELINE_SOURCE == "web"
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-    - docker build -t $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker build --cache-from "$CI_REGISTRY_IMAGE:latest" --build-arg BUILDKIT_INLINE_CACHE=1 -t "$CI_REGISTRY_IMAGE:latest" .
+    - if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then docker push "$CI_REGISTRY_IMAGE:latest"; fi
 
-Build:Modules:
-  stage: Build
+build:
+  stage: build
   image: $CI_REGISTRY_IMAGE:latest
-  needs:
-    - job: Build:Tools
-      optional: true
+  interruptible: true
   rules:
-    - changes:
-        - "*/**/VERSION"
-        - Taskfile.yml
-        - .tasks/**/*
-        - .gitlab-ci.yml
     - if: $CI_PIPELINE_SOURCE == "web"
-  variables:
-    OCI_REGISTRY: $CI_REGISTRY
-    OCI_REPO: $CI_REGISTRY_IMAGE
-    OCI_REPO_USER: $CI_REGISTRY_USER
-    OCI_REPO_PASS: $CI_REGISTRY_PASSWORD
+    - changes: *module-paths
+  script:
+    - task build:changed
+    - task readme:changed
+  artifacts:
+    paths:
+      - "**/.output/module.zip"
+    expire_in: 1 week
+
+push:
+  stage: push
+  image: $CI_REGISTRY_IMAGE:latest
+  resource_group: module-registry
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - changes: *module-paths
   script:
     - task auth
-    - |
-      if git diff --name-only HEAD~1 | grep -q 'VERSION$'; then
-        task list:changed
-        task build:push:changed
-        task readme:changed
-      else
-        echo "No changed module directories - nothing to build/push"
-      fi
+    - task push:changed

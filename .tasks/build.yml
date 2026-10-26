@@ -71,15 +71,13 @@ tasks:
           DIR: '{{.ITEM}}'
 
   build:changed:
-    desc: Build changed Modules
-    deps:
+    desc: Build changed Modules into .output/module.zip - VERSION changed since DIFF_BASE, or the dirs in TARGETS
+    cmds:
+      - echo -e "\033[36m==>\033[0m diff base {{.DIFF_BASE}} - modules to build -> {{if .CHANGED_MODULE_DIRS}}{{.CHANGED_MODULE_DIRS}}{{else}}none{{end}}"
       - for: { var: CHANGED_MODULE_DIRS }
         task: .build
         vars:
           DIR: '{{.ITEM}}'
-    preconditions:
-      - sh: '[ -n "{{.CHANGED_MODULE_DIRS}}" ]'
-        msg: "No changed module directories found."
 
   .push:
     internal: true
@@ -115,14 +113,12 @@ tasks:
           MODE: '{{.MODE}}'
 
   push:changed:
-    desc: Push changed Modules
-    deps:
+    desc: Push changed Modules - the .output/module.zip build:changed left in each module dir
+    cmds:
+      - echo -e "\033[36m==>\033[0m diff base {{.DIFF_BASE}} - modules to push -> {{if .CHANGED_MODULE_DIRS}}{{.CHANGED_MODULE_DIRS}}{{else}}none{{end}}"
       - for: { var: CHANGED_MODULE_DIRS }
         task: .push
         vars:
           DIR: '{{.ITEM}}'
           OCI_REPO: '{{.OCI_REPO}}'
           MODE: '{{.MODE}}'
-    preconditions:
-      - sh: '[ -n "{{.CHANGED_MODULE_DIRS}}" ]'
-        msg: "No changed module directories found."
