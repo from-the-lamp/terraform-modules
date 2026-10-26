@@ -35,8 +35,11 @@ pipeline (`<dir>/.output/module.zip`, kept as artifacts); the `push` job runs `t
 module packages - the zip is the single `archive/zip` layer OpenTofu requires inside the OCI
 artifact). Change what a stage does in this Taskfile; change the pipeline skeleton in `infra/cicd`.
 
-`OCI_REPO` is `registry.gitlab.com/from-the-lamp/infra/terraform/modules` - this project's own
-registry path. Task's global `vars:` outrank environment variables, so the value in `Taskfile.yml`
-is what every push uses, in CI too; an `OCI_REPO` CI variable would be silently ignored. Nothing
+`OCI_REPO` is `registry.gitlab.com/from-the-lamp/infra/terraform-modules`. The project's canonical
+path is `from-the-lamp/infra/terraform-modules` (that is `$CI_REGISTRY_IMAGE`); the
+`infra/terraform/modules` path in git remotes and `darwin/workspaces.nix` is only a redirect, and
+registry paths do not follow redirects - never derive `OCI_REPO` from the clone URL. Task's global
+`vars:` outrank environment variables, so the value in `Taskfile.yml` is what every push uses, in
+CI too. Nothing
 consumes these OCI artifacts yet: terragrunt (`root.hcl`, `private_modules_base_url`) still pulls
 modules over `git::https`.
