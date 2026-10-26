@@ -28,11 +28,12 @@ To force a specific module to build regardless of git diff: `task build:push:<di
 
 ## CI: build stage, then push stage - and only `main` pushes
 
-| Stage | Job | Runs on | Command |
-|---|---|---|---|
-| `.pre` | `tools` | `Dockerfile`/`mise.toml` changed, or a web pipeline | builds the CI tools image with inline cache; pushes `:latest` **only on `main`** |
-| `build` | `build` | MRs and `main` | `task build:changed && task readme:changed` - `<dir>/.output/module.zip`, kept as job artifacts |
-| `push` | `push` | `main` only (never from an MR) | `task auth && task push:changed` - `oras push` of the zips the build stage left |
+`.gitlab-ci.yml` only includes the shared `task-pipeline` component from `infra/cicd` (its README
+has the jobs, inputs and contract). The `build` job runs `task auth` + `task build:changed` in every
+pipeline (`<dir>/.output/module.zip`, kept as artifacts); the `push` job runs `task auth` +
+`task push:changed` on `main` only (`oras push` of those zips as OpenTofu
+module packages - the zip is the single `archive/zip` layer OpenTofu requires inside the OCI
+artifact). Change what a stage does in this Taskfile; change the pipeline skeleton in `infra/cicd`.
 
 `OCI_REPO` is `registry.gitlab.com/from-the-lamp/infra/terraform/modules` - this project's own
 registry path. Task's global `vars:` outrank environment variables, so the value in `Taskfile.yml`
