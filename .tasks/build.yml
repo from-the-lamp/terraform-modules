@@ -4,7 +4,7 @@ silent: true
 tasks:
   .build:
     internal: true
-    dir: '{{.DIR}}'
+    dir: 'modules/{{.DIR}}'
     cmds:
       - |
         OUT="$(pwd)/.output"
@@ -81,7 +81,7 @@ tasks:
 
   .push:
     internal: true
-    dir: '{{.DIR}}'
+    dir: 'modules/{{.DIR}}'
     cmds:
       - |
         VERSION=$(cat VERSION)

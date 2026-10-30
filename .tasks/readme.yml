@@ -4,7 +4,7 @@ silent: true
 tasks:
   .readme:
     internal: true
-    dir: '{{.DIR}}'
+    dir: 'modules/{{.DIR}}'
     cmds:
       - terraform-docs markdown table --output-file README.md --output-mode inject .
 

@@ -17,13 +17,14 @@ A collection of reusable Terraform modules for managing infrastructure across va
 
 ## 📂 Repository Structure
 
-The repository is organized into logical groups based on the provider or purpose:
+All module directories live under `modules/`, organized into logical groups based on the
+provider or purpose:
 
-- **`cloudflare/`** — Cloudflare resources (Tunnels, DNS, WAF).
-- **`kubernetes/`** — Management of manifests and resources within K8s.
-- **`oracle/`** — Infrastructure in Oracle Cloud Infrastructure (OCI).
-- **`vault/`** — Configuration of policies, secrets, and authentication in HashiCorp Vault.
-- **`tools/`** — Helper utilities (password generation, cloud-init).
+- **`modules/cloudflare/`** — Cloudflare resources (Tunnels, DNS, WAF).
+- **`modules/kubernetes/`** — Management of manifests and resources within K8s.
+- **`modules/oracle/`** — Infrastructure in Oracle Cloud Infrastructure (OCI).
+- **`modules/vault/`** — Configuration of policies, secrets, and authentication in HashiCorp Vault.
+- **`modules/tools/`** — Helper utilities (password generation, cloud-init).
 
 ---
 
@@ -32,21 +33,21 @@ The repository is organized into logical groups based on the provider or purpose
 ### ☁️ Cloudflare
 | Module | Description |
 |:---|:---|
-| [`tunnel`](./cloudflare/tunnel) | Configure Cloudflare Tunnels for secure access to local services. |
+| [`tunnel`](./modules/cloudflare/tunnel) | Configure Cloudflare Tunnels for secure access to local services. |
 
 ### 🏛️ Oracle Cloud (OCI)
 A comprehensive set of modules for building robust cloud infrastructure:
-- **Networking:** [`vcn`](./oracle/vcn), [`nsg`](./oracle/nsg), [`nlb`](./oracle/nlb).
-- **Compute:** [`instance`](./oracle/instance), [`instance_pool`](./oracle/instance_pool).
-- **Security:** [`kms_vault`](./oracle/kms_vault), [`identity_user`](./oracle/identity_user).
-- **Storage:** [`bucket`](./oracle/bucket).
+- **Networking:** [`vcn`](./modules/oracle/vcn), [`nsg`](./modules/oracle/nsg), [`nlb`](./modules/oracle/nlb).
+- **Compute:** [`instance`](./modules/oracle/instance), [`instance_pool`](./modules/oracle/instance_pool).
+- **Security:** [`kms_vault`](./modules/oracle/kms_vault), [`identity_user`](./modules/oracle/identity_user).
+- **Storage:** [`bucket`](./modules/oracle/bucket).
 
 ### 🔒 HashiCorp Vault
 Modules for automating secrets management:
-- [`oidc`](./vault/oidc) — Configure OIDC authentication.
-- [`database_engine`](./vault/database_engine) — Dynamic secrets for databases.
-- [`kubernetes_auth_roles`](./vault/kubernetes_auth_roles) — Roles for K8s pod authorization.
-- [`policies`](./vault/policies) — ACL policy management.
+- [`oidc`](./modules/vault/oidc) — Configure OIDC authentication.
+- [`database_engine`](./modules/vault/database_engine) — Dynamic secrets for databases.
+- [`kubernetes_auth_roles`](./modules/vault/kubernetes_auth_roles) — Roles for K8s pod authorization.
+- [`policies`](./modules/vault/policies) — ACL policy management.
 
 ---
 
@@ -70,7 +71,7 @@ Example of using the Cloudflare Tunnel module:
 
 ```hcl
 module "cloudflare_tunnel" {
-  source = "git::https://gitlab.com/from-the-lamp/infra/terraform/modules.git//cloudflare/tunnel?ref=main"
+  source = "git::https://gitlab.com/from-the-lamp/infra/terraform/modules.git//modules/cloudflare/tunnel?ref=main"
 
   account_id   = var.cloudflare_account_id
   tunnel_name  = "my-app-tunnel"

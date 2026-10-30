@@ -18,14 +18,14 @@ vars:
       done
       echo HEAD~1
   MODULE_DIRS:
-    sh: find . -type f -name "VERSION" -exec dirname {} \; | sed 's|^\./||' | tr '\n' ' '
+    sh: find modules -type f -name "VERSION" -exec dirname {} \; | sed 's|^modules/||' | tr '\n' ' '
   CHANGED_MODULE_DIRS:
     sh: |
       if [ -n "${TARGETS:-}" ]; then
         echo "$TARGETS"
         exit 0
       fi
-      git diff --name-only --diff-filter=d {{.DIFF_BASE}} | grep 'VERSION$' | xargs -r -n1 dirname | sort -u | tr '\n' ' '
+      git diff --name-only --diff-filter=d {{.DIFF_BASE}} | grep '^modules/.*VERSION$' | xargs -r -n1 dirname | sed 's|^modules/||' | sort -u | tr '\n' ' '
 
 includes:
   init:
@@ -61,7 +61,7 @@ tasks:
           exit 0
         fi
         for d in {{.CHANGED_MODULE_DIRS}}; do
-          echo "$d -> {{.OCI_REPO}}/$d:$(cat "$d/VERSION")"
+          echo "$d -> {{.OCI_REPO}}/$d:$(cat "modules/$d/VERSION")"
         done
 
   list:changed:
