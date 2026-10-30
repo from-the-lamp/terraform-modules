@@ -17,9 +17,14 @@ if that exact version tag already exists in the OCI registry. `task plan` prints
 the `<OCI_REPO>/<dir>:<VERSION>` each changed module would be pushed to; `DIFF_BASE=<ref>` and
 `TARGETS="dir1 dir2"` (environment variables) override the selection, and `TARGETS` in "Run
 pipeline" on `main` publishes those modules without a commit. Bump `VERSION` to a new value to force a real release. If you change a module's `.tf`
-files without bumping `VERSION`, nothing gets published. As of this writing, no module directory in
-the repo has a `VERSION` file yet - add one yourself before this mechanism does anything for a given
-module (`task list:all`/`task build:push:changed` will otherwise just report nothing to do).
+files without bumping `VERSION`, nothing gets published. Every module directory now has a `VERSION`
+file (all currently `1.0.0`), and all 22 are already published in the OCI registry - verified
+directly against the registry with `oras manifest fetch`, each returning a real
+`application/vnd.opentofu.modulepkg` manifest. That initial publish happened via
+`task dev:build:push:<dirname>`, not CI: every `push:changed` run in this repo's pipeline history
+reports "modules to push -> none", since nothing has changed relative to `DIFF_BASE` since those
+`VERSION` files were added - that is expected once a module is already at its pinned tag, not a
+sign the mechanism is broken.
 
 `task dev:build:push:<dirname>` (dev mode) pushes to the same tag unconditionally, overwriting
 whatever is there - use it for iterating, not against a version you consider a real release.
@@ -40,6 +45,7 @@ path is `from-the-lamp/infra/terraform-modules` (that is `$CI_REGISTRY_IMAGE`); 
 `infra/terraform/modules` path in git remotes and `darwin/workspaces.nix` is only a redirect, and
 registry paths do not follow redirects - never derive `OCI_REPO` from the clone URL. Task's global
 `vars:` outrank environment variables, so the value in `Taskfile.yml` is what every push uses, in
-CI too. Nothing
-consumes these OCI artifacts yet: terragrunt (`root.hcl`, `private_modules_base_url`) still pulls
-modules over `git::https`.
+CI too. `terragrunt` consumes these OCI artifacts already: every module `source` there resolves
+through `root.hcl`'s `private_modules_base_url` (`oci://registry.gitlab.com/from-the-lamp/infra/terraform-modules`)
+plus a `?tag=<version>` pinned per `_common/*.hcl` file, with no `git::https` sources left anywhere
+in that repo.
