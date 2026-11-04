@@ -11,6 +11,15 @@ resource "gitlab_project" "this" {
   default_branch   = var.default_branch
   merge_method     = var.merge_method
   ci_config_path   = var.ci_config_path
+
+  container_expiration_policy {
+    enabled           = var.container_expiration_policy_enabled
+    cadence           = var.container_expiration_policy_cadence
+    keep_n            = var.container_expiration_policy_keep_n
+    older_than        = var.container_expiration_policy_older_than
+    name_regex_delete = var.container_expiration_policy_name_regex_delete
+    name_regex_keep   = var.container_expiration_policy_name_regex_keep
+  }
 }
 
 resource "gitlab_branch_protection" "default" {

@@ -63,3 +63,39 @@ variable "allow_force_push" {
   default     = false
   description = "Whether force-pushes to default_branch are permitted for users with push access."
 }
+
+variable "container_expiration_policy_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the container/OCI registry cleanup policy."
+}
+
+variable "container_expiration_policy_cadence" {
+  type        = string
+  default     = "1d"
+  description = "How often the cleanup policy runs. One of: 1d, 7d, 14d, 1month, 3month."
+}
+
+variable "container_expiration_policy_keep_n" {
+  type        = number
+  default     = 1
+  description = "Number of most recent tags to always keep, regardless of age."
+}
+
+variable "container_expiration_policy_older_than" {
+  type        = string
+  default     = "90d"
+  description = "Delete tags older than this, unless protected by keep_n/name_regex_keep. One of: 7d, 14d, 30d, 90d."
+}
+
+variable "container_expiration_policy_name_regex_delete" {
+  type        = string
+  default     = ".*"
+  description = "Tags matching this regex are candidates for deletion."
+}
+
+variable "container_expiration_policy_name_regex_keep" {
+  type        = string
+  default     = null
+  description = "Tags matching this regex are never deleted, regardless of age/keep_n."
+}
