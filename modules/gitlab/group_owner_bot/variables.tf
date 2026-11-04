@@ -29,3 +29,14 @@ variable "expiration_days" {
   type        = number
   description = "Lifetime (in days) of the token produced by each rotation."
 }
+
+variable "ci_variable" {
+  type = object({
+    project   = string
+    key       = string
+    masked    = optional(bool, true)
+    protected = optional(bool, false)
+  })
+  default     = null
+  description = "If set, also write the bot's current token into this GitLab project's CI/CD variable - created on the first apply, overwritten in place on every rotation. Lets CI consume an always-current token with zero extra plumbing (no Vault round-trip, no fetch step) - the project's own CI just reads the variable like any other."
+}

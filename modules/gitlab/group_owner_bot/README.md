@@ -18,6 +18,8 @@
 | [gitlab_group_service_account.bot](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs/resources/group_service_account) | resource |
 | [gitlab_group_membership.bot](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs/resources/group_membership) | resource |
 | [gitlab_group_service_account_access_token.bot](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs/resources/group_service_account_access_token) | resource |
+| [gitlab_project_variable.token](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs/resources/project_variable) | resource |
+| [data.gitlab_group.this](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs/data-sources/group) | data source |
 
 ## Inputs
 
@@ -29,6 +31,7 @@
 | token_scopes | Scopes granted to the bot's access token | `list(string)` | `["api"]` | no |
 | rotate_before_days | Days before expiration to trigger rotation | `number` | n/a | yes |
 | expiration_days | Lifetime (days) of the token produced by each rotation | `number` | n/a | yes |
+| ci_variable | If set, write the bot's token into this GitLab project's own CI/CD variable (`{project, key, masked, protected}`) | `object` | `null` | no |
 
 ## Outputs
 
@@ -55,5 +58,9 @@
   group Owner without an already-Owner-level actor doing it. After that one-time step, the bot's
   own (rotating) token can be used as the caller for every subsequent apply, including re-applying
   this same unit to rotate its own token.
-- Deliberately does not write the token anywhere - pair with `vault/secrets_managed`, not
-  `vault/secrets` (that one ignores content drift and would never see a rotated value).
+- `ci_variable` is the intended way to consume this bot's token in the common case (a project's
+  own CI needs it) - it writes a `gitlab_project_variable` directly, so the value is already
+  current by the time any pipeline reads it, with no extra fetch step and no Vault involved. Use
+  `vault/secrets_managed` separately only if something OTHER than this one project's own CI also
+  needs the token (never `vault/secrets` - that one ignores content drift and would never see a
+  rotated value).

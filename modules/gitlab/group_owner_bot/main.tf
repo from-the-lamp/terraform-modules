@@ -29,3 +29,13 @@ resource "gitlab_group_service_account_access_token" "bot" {
 
   depends_on = [gitlab_group_membership.bot]
 }
+
+resource "gitlab_project_variable" "token" {
+  count = var.ci_variable != null ? 1 : 0
+
+  project   = var.ci_variable.project
+  key       = var.ci_variable.key
+  value     = gitlab_group_service_account_access_token.bot.token
+  masked    = var.ci_variable.masked
+  protected = var.ci_variable.protected
+}
