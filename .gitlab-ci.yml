@@ -1,2 +1,4 @@
 include:
   - component: $CI_SERVER_FQDN/from-the-lamp/infra/cicd/task-pipeline@main
+    inputs:
+      dockerfile-path: .docker/Dockerfile

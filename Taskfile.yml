@@ -16,7 +16,23 @@ vars:
           exit 0
         fi
       done
-      echo HEAD~1
+      # Local/pre-commit fallback: "HEAD" is a sentinel GIT_DIFF_FLAGS below
+      # keys off of, not just another ref. HEAD~1 looked equivalent but
+      # breaks the moment HEAD is a merge commit - its first parent is "my
+      # own tip before the merge", so everything the merge brought in from
+      # the other side reads as "changed" (e.g. every renovate VERSION
+      # bump pulled in by a `git pull`/merge from main).
+      echo HEAD
+  # Pre-commit hooks see the *staged* snapshot, not the full working tree -
+  # --cached scopes the local fallback to that, so unrelated unstaged edits
+  # elsewhere in the tree don't get swept into "changed" either. Empty in CI,
+  # where DIFF_BASE is a real historical SHA and the checkout has nothing
+  # staged anyway.
+  GIT_DIFF_FLAGS:
+    sh: |
+      if [ "{{.DIFF_BASE}}" = "HEAD" ]; then
+        echo "--cached"
+      fi
   MODULE_DIRS:
     sh: find modules -type f -name "VERSION" -exec dirname {} \; | sed 's|^modules/||' | tr '\n' ' '
   CHANGED_MODULE_DIRS:
@@ -25,7 +41,7 @@ vars:
         echo "$TARGETS"
         exit 0
       fi
-      git diff --name-only --diff-filter=d {{.DIFF_BASE}} | grep '^modules/.*VERSION$' | xargs -r -n1 dirname | sed 's|^modules/||' | sort -u | tr '\n' ' '
+      git diff {{.GIT_DIFF_FLAGS}} --name-only --diff-filter=d {{.DIFF_BASE}} | grep '^modules/.*VERSION$' | xargs -r -n1 dirname | sed 's|^modules/||' | sort -u | tr '\n' ' '
 
 includes:
   init:
