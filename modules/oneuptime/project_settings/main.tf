@@ -19,6 +19,23 @@ resource "oneuptime_project" "this" {
   enable_automatic_alert_investigation    = var.enable_automatic_alert_investigation
   enable_automatic_postmortem_draft       = var.enable_automatic_postmortem_draft
 
+  enable_automatic_incident_remediation = var.enable_automatic_incident_remediation
+  enable_automatic_alert_remediation    = var.enable_automatic_alert_remediation
+
+  ai_context = var.ai_context
+
+  ai_daily_token_limit         = var.ai_daily_token_limit
+  ai_run_time_limit_in_minutes = var.ai_run_time_limit_in_minutes
+
+  incident_ai_max_concurrent_investigations = var.incident_ai_max_concurrent_investigations
+  alert_ai_max_concurrent_investigations    = var.alert_ai_max_concurrent_investigations
+
+  incident_investigation_dedupe_window_minutes = var.incident_investigation_dedupe_window_minutes
+  alert_investigation_dedupe_window_minutes    = var.alert_investigation_dedupe_window_minutes
+
+  incident_ai_daily_fix_task_limit = var.incident_ai_daily_fix_task_limit
+  alert_ai_daily_fix_task_limit    = var.alert_ai_daily_fix_task_limit
+
   lifecycle {
     prevent_destroy = true
   }
