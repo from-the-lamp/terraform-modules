@@ -8,7 +8,7 @@ resource "oneuptime_api_key_permission" "this" {
   for_each = var.permissions
 
   api_key_id = oneuptime_api_key.this.id
-  permission = jsonencode(each.value)
+  permission = each.value
 }
 
 data "vault_kv_secret_v2" "existing" {

@@ -21,13 +21,19 @@ resource "oneuptime_alert_severity" "warning" {
 }
 
 locals {
-  # Incoming Request monitor criteria evaluate top to bottom, first match
-  # wins for the WHOLE request - so a webhook body is judged once, not once
-  # per alert inside it. Alertmanager's own group_by now includes `severity`
-  # (lamp-victoria-metrics' vmalertmanager-config.yaml), which guarantees
-  # every webhook batch holds alerts of a single severity value, so
-  # `commonLabels.severity` alone is trustworthy here without inspecting
-  # every alert in the body.
+  # Every criteria instance below is evaluated independently against each
+  # incoming webhook - OneUptime does NOT stop at the first match. Confirmed
+  # live, the hard way: with js_fallback left as a bare `alerts.length > 0`
+  # (no severity exclusion), an ordinary warning-severity alert matched BOTH
+  # "Warning - Firing" (createAlerts) AND "Fallback - unknown severity"
+  # (createIncidents, Critical) on the SAME webhook - that's what turned a
+  # routine KubeContainerOOMKilled into a spurious Critical Incident. So
+  # js_fallback below must positively exclude every severity already
+  # handled by its own criteria, not just rely on ordering. Alertmanager's
+  # own group_by now includes `severity` (lamp-victoria-metrics'
+  # vmalertmanager-config.yaml), which guarantees every webhook batch holds
+  # alerts of a single severity value, so `commonLabels.severity` alone is
+  # trustworthy here without inspecting every alert in the body.
   #
   # Each severity gets its own Firing/Resolved pair rather than one shared
   # pair, because the previous single-pair design had a real bug: only the
@@ -58,96 +64,11 @@ locals {
   # mean "this alert" rather than "whatever the batch happens to share".
   incident_title = "{{requestBody.commonLabels.alertname}} ({{requestBody.commonLabels.cluster}})"
 
-  # FTL-223 (OneUptime Slack notification redesign): two things this
-  # project does NOT control, confirmed by reading OneUptime's own source
-  # rather than assumed -
-  #   - SeriesContextEnricher.enrichTitle (packages/Common/Server/Utils/
-  #     Monitor/SeriesContextEnricher.ts) unconditionally appends
-  #     "- Fingerprint: <value>" to the title whenever that value isn't
-  #     already literally present in the rendered text - no setting turns
-  #     this off, so fingerprint cannot be kept out of the title.
-  #   - the Incident/Alert card's own Severity/State/Root-Cause block is
-  #     rendered by OneUptime itself, outside this description - not
-  #     something a monitor template can suppress or rewrite.
-  # Given that, `Severity:` is deliberately NOT repeated here (would be the
-  # literal duplicate the redesign was asked to remove); a colored
-  # emoji carries it instead, hardcoded per criteria since each severity
-  # already has its own criteria block below - no {{severity}} needed.
-  grafana_host = "https://grafana.from-the-lamp.work"
-
-  # Loki's datasource uid is "loki" (lamp-grafana, confirmed live). This
-  # link is wired even though a live Loki query returned HTTP 502 twice in
-  # the same session (Grafana query path currently broken, tracked
-  # separately) - per explicit instruction, ship the link now so it starts
-  # working the moment Loki is fixed, rather than waiting on it.
-  # Namespace is interpolated raw with no escaping: Kubernetes namespace
-  # names are DNS-1123 labels (lowercase alphanumeric and hyphens only), so
-  # they're always safe inside a URL - everything else here is percent-
-  # encoded by hand, since OneUptime's template language has no
-  # encode/escape function (confirmed: monitor/javascript-expression.md).
-  # Cluster-wide alerts with no `namespace` label will show the raw
-  # `{{requestBody.commonLabels.namespace}}` placeholder in this one link
-  # until FTL-xxx (Grafana/Loki link building moves to the alert-rule
-  # annotation level, where a real template language with conditionals is
-  # available) - accepted as a known, tracked limitation for now.
-  loki_logs_url = "${local.grafana_host}/explore?orgId=1&left=%7B%22datasource%22%3A%22loki%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22expr%22%3A%22%7Bnamespace%3D%5C%22{{requestBody.commonLabels.namespace}}%5C%22%7D%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-1h%22%2C%22to%22%3A%22now%22%7D%7D"
-
-  # RU/EN labels, written by hand once here - not machine-translated per
-  # alert, and not OneUptime's own locale system (confirmed in source,
-  # packages/Common/Server/Utils/Notification/UserLanguage.ts: that
-  # mechanism keys off ONE addressed user's own account language setting
-  # and is used for personal on-call pages; it has no concept of a channel
-  # post with no single addressee, so it never applies to these Incident/
-  # Alert cards - they always render OneUptime's own native chrome in
-  # English regardless of anyone's profile language). Technical values
-  # (alertname, cluster, namespace, the fingerprint OneUptime appends to
-  # the title) stay untranslated raw/English on purpose - only the field
-  # labels we write ourselves are bilingual. The alert-specific prose
-  # itself (commonAnnotations.summary/description) is whatever English text
-  # that alert rule's own annotations contain - translating that honestly
-  # needs a real Russian annotation written per rule, which is real
-  # additional work, not a reason to machine-translate it here (tracked
-  # separately, not done in this pass).
-  investigate_links = "📊 [Metrics / Метрики]({{requestBody.alerts[0].generatorURL}})   ·   📜 [Logs / Логи](${local.loki_logs_url})"
-
-  description_for = {
-    # 🔴/🟡/⚠️ stand in for severity so the word itself isn't repeated -
-    # OneUptime's own card already shows it. Each severity's wording is
-    # static per criteria, not templated from {{severity}}.
-    critical = <<-EOT
-      🔴  **{{requestBody.commonAnnotations.summary}}**
-
-      {{requestBody.commonAnnotations.description}}
-
-      **Cluster / Кластер:** `{{requestBody.commonLabels.cluster}}`
-
-      ${local.investigate_links}
-    EOT
-
-    warning = <<-EOT
-      🟡  **{{requestBody.commonAnnotations.summary}}**
-
-      {{requestBody.commonAnnotations.description}}
-
-      **Cluster / Кластер:** `{{requestBody.commonLabels.cluster}}`
-
-      ${local.investigate_links}
-    EOT
-  }
-
-  # The one place {{severity}} is still shown: the fallback criteria exists
-  # BECAUSE the severity label was missing or unrecognized, so showing its
-  # raw value here is the actual diagnostic content, not a duplicate.
-  fallback_description = <<-EOT
-    ⚠️  **{{requestBody.commonAnnotations.summary}}**
-
-    {{requestBody.commonAnnotations.description}}
-
-    **Cluster / Кластер:** `{{requestBody.commonLabels.cluster}}`
-    **Severity (unrecognized) / Severity (не распознан):** `{{requestBody.commonLabels.severity}}`
-
-    ${local.investigate_links}
-  EOT
+  # No custom description template: the body is exactly the Alertmanager
+  # rule's own annotations.description, unformatted - OneUptime's own
+  # Incident/Alert card already renders severity/state/fingerprint/buttons
+  # around it, so this is the bare default look, not a design of ours.
+  description = "{{requestBody.commonAnnotations.description}}"
 
   # OneUptime does not expose `requestBody` as a variable: it replaces every
   # {{placeholder}} with the value as TEXT and then runs the result
@@ -168,7 +89,7 @@ locals {
     "\"{{requestBody.commonLabels.severity}}\" === \"${s}\" && {{requestBody.alerts}}.length > 0 && {{requestBody.alerts}}.every(function(a){return a.status === \"resolved\";})"
   }
 
-  js_fallback = "{{requestBody.alerts}}.length > 0"
+  js_fallback = "\"{{requestBody.commonLabels.severity}}\" !== \"critical\" && \"{{requestBody.commonLabels.severity}}\" !== \"warning\" && {{requestBody.alerts}}.length > 0"
 }
 
 resource "oneuptime_monitor" "this" {
@@ -200,7 +121,7 @@ resource "oneuptime_monitor" "this" {
 
         incidents = [{
           title                 = local.incident_title
-          description           = local.description_for["critical"]
+          description           = local.description
           incident_severity_id  = data.oneuptime_incident_severity.critical.id
           auto_resolve_incident = true
         }]
@@ -226,7 +147,7 @@ resource "oneuptime_monitor" "this" {
 
         incidents = [{
           title                 = local.incident_title
-          description           = local.description_for["critical"]
+          description           = local.description
           incident_severity_id  = data.oneuptime_incident_severity.critical.id
           auto_resolve_incident = true
         }]
@@ -252,7 +173,7 @@ resource "oneuptime_monitor" "this" {
 
         alerts = [{
           title              = local.incident_title
-          description        = local.description_for["warning"]
+          description        = local.description
           alert_severity_id  = oneuptime_alert_severity.warning.id
           auto_resolve_alert = true
         }]
@@ -278,7 +199,7 @@ resource "oneuptime_monitor" "this" {
 
         alerts = [{
           title              = local.incident_title
-          description        = local.description_for["warning"]
+          description        = local.description
           alert_severity_id  = oneuptime_alert_severity.warning.id
           auto_resolve_alert = true
         }]
@@ -306,7 +227,7 @@ resource "oneuptime_monitor" "this" {
 
         incidents = [{
           title                 = "Unrecognized-severity alert: ${local.incident_title}"
-          description           = local.fallback_description
+          description           = local.description
           incident_severity_id  = data.oneuptime_incident_severity.critical.id
           auto_resolve_incident = true
         }]
